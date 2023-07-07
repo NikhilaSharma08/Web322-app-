@@ -15,12 +15,13 @@
 
 *
 
-* Cyclic Web App URL: https://awful-duck-raincoat.cyclic.app/posts/add
+* Cyclic Web App URL: 
+https://rich-cyan-rattlesnake-fez.cyclic.app/about
 
 
 *
 
-* GitHub Repository URL: ____________https://github.com/NikhilaSharma08/web322-app-2-_________________________________________
+* GitHub Repository URL: ____________https://github.com/NikhilaSharma08/Web322-app-_________________________________________
 
 *
 
