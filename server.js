@@ -25,6 +25,8 @@
 *
 
 ********************************************************************************/
+
+const {  initialize,  getAllPosts,  getCategories,  addPost,  getPostById,  getPostsByCategory, getPostsByMinDate,} = require("./blog-service.js");
 const express = require("express");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
