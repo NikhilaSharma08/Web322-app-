@@ -3,11 +3,9 @@ const { gte } = Sequelize.Op;
 
 // set up sequelize to point to our postgres database
 var sequelize = new Sequelize(
-  "tgxufbkt",
-  "tgxufbkt",
-  "Jcv_k8x_AoNEzn36l-r6Q24T7Oy1nIud",
+  'azaylcii', 'azaylcii',"Jcv_k8x_AoNEzn36l-r6Q24T7Oy1nIud",
   {
-    host: "babar.db.elephantsql.com",
+    host: "stampy.db.elephantsql.com",
     dialect: "postgres",
     port: 5432,
     dialectOptions: {
