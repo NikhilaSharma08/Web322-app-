@@ -115,14 +115,14 @@ app.get("/blog", async (req, res) => {
     viewData.categoriesMessage = "no results";
   }
 
-  if (viewData.posts.length > 0) {
-    res.render("blog", { data: viewData });
-  } else {
-    res.render("blog", {
-      data: viewData,
-      message: "Please try another post / category",
-    });
-  }
+ if (viewData.posts?.length > 0) {
+  res.render("blog", { data: viewData });
+} else {
+  res.render("blog", {
+    data: viewData,
+    message: "Please try another post / category",
+  });
+}
 });
 
 app.get("/posts", (req, res) => {
