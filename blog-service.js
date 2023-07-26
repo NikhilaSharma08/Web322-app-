@@ -128,6 +128,21 @@ function deletePostById(id) {
     where: { id: id }
   });
 }
+function deleteCategoryById(id) {
+  return new Promise((resolve, reject) => {
+    Category.destroy({
+      where: {
+        id: id,
+      },
+    })
+      .then(() => {
+        resolve("Destroyed");
+      })
+      .catch(() => {
+        reject("Unable to delete category");
+      });
+  });
+}
 
 module.exports = {
   initialize,
