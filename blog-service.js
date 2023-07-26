@@ -15,210 +15,244 @@ var sequelize = new Sequelize(
   query: { raw: true }
 });
 
-// Define the Post model
-const Post = sequelize.define('Post', {
-  body: {
-    type: Sequelize.TEXT,
-    allowNull: false
-  },
-  title: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
-  postDate: {
-    type: Sequelize.DATE,
-    allowNull: false
-  },
-  featureImage: {
-    type: Sequelize.STRING
-  },
-  published: {
-    type: Sequelize.BOOLEAN,
-    defaultValue: false
-  }
+
+const Post = sequelize.define("Post", {
+  body: Sequelize.TEXT,
+  title: Sequelize.STRING,
+  postDate: Sequelize.DATE,
+  featureImage: Sequelize.STRING,
+  published: Sequelize.BOOLEAN,
 });
 
-// Define the Category model
-const Category = sequelize.define('Category', {
-  category: {
-    type: Sequelize.STRING,
-    allowNull: false,
-    unique: true
-  }
+// Defining the Category Model
+const Category = sequelize.define("Category", {
+  category: Sequelize.STRING,
 });
 
-// Define the relationship (belongsTo) between Post and Category
-Post.belongsTo(Category, { foreignKey: 'categoryId' }); // 'categoryId' is the foreign key in the Post table
+// This will ensure that our Post model gets a "category" column that will act as a foreign key to the Category model
+Post.belongsTo(Category, { foreignKey: "category" });
 
-// Sync the models with the database (create the tables if they don't exist)
-sequelize.sync()
-  .then(() => {
-    console.log('Database and tables are in sync');
-  })
-  .catch(err => {
-    console.error('Error syncing database:', err);
-  });
-
-// Implement the functions to interact with the database using the defined models
-
+// => Read the posts.json and categories.json files and store the data in global arrays
 function initialize() {
-  return sequelize.authenticate()
-    .then(() => {
-      console.log('Connection has been established successfully.');
-      return sequelize.sync();
-    })
-    .then(() => {
-      console.log('Database and tables are in sync');
-    })
-    .catch(err => {
-      console.error('Unable to connect to the database:', err);
-      throw new Error('Unable to sync the database');
-    });
-}
-
-function getAllPosts() {
-  return Post.findAll({
-    include: Category
-  });
-}
-
-function getPostsByCategory(categoryId) {
-  return Post.findAll({
-    where: {
-      categoryId: categoryId
-    },
-    include: Category
-  });
-}
-
-function getPostsByMinDate(minDate) {
-  return Post.findAll({
-    where: {
-      postDate: {
-        [Sequelize.Op.gte]: minDate
-      }
-    },
-    include: Category
-  });
-}
-
-function getPostById(id) {
-  return Post.findByPk(id, {
-    include: Category
-  });
-}
-
-function addPost(postData) {
-  postData.published = (postData.published) ? true : false;
-
-  for (const key in postData) {
-    if (postData[key] === "") {
-      postData[key] = null;
-    }
-  }
-
-  postData.postDate = new Date();
-
-  return Post.create(postData)
-    .then(() => {
-      console.log('Post created successfully');
-    })
-    .catch(err => {
-      console.error('Unable to create post:', err);
-      throw new Error('Unable to create post');
-    });
-}
-
-function getPublishedPosts() {
-  return Post.findAll({
-    where: {
-      published: true
-    },
-    include: Category
-  });
-}
-
-function getPublishedPostsByCategory(categoryId) {
-  return Post.findAll({
-    where: {
-      published: true,
-      categoryId: categoryId
-    },
-    include: Category
-  });
-}
-
-function getCategories() {
-  return Category.findAll();
-
-}
-
-function addCategory(categoryData) {
+  // Ensures that the categories file is read and assigned first before usage
   return new Promise((resolve, reject) => {
-    for (const prop in categoryData) {
-      if (categoryData[prop] === "") {
-        categoryData[prop] = null;
+    sequelize
+      .sync()
+      .then(() => {
+        resolve();
+      })
+      .catch(() => {
+        reject("Unable to sync to the database.");
+      });
+  });
+}
+
+// => Provides full array of "posts" objects
+function getAllPosts() {
+  return new Promise((resolve, reject) => {
+    Post.findAll()
+      .then((data) => {
+        resolve(data);
+      })
+      .catch(() => {
+        reject("No results returned");
+      });
+  });
+}
+
+// => Provides an array of "post" objects whose published property is true
+function getPublishedPosts() {
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: {
+        published: true,
+      },
+    })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch(() => {
+        reject("No results returned");
+      });
+  });
+}
+
+// => Provides an array of "post" objects whose published property is true and finds posts by category
+function getPublishedPostsByCategory(category) {
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: {
+        category: category,
+        published: true,
+      },
+    })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch(() => {
+        reject("No results returned");
+      });
+  });
+}
+
+// => Provides full array of "category" objects
+function getCategories() {
+  return new Promise((resolve, reject) => {
+    Category.findAll()
+      .then((data) => {
+        resolve(data);
+      })
+      .catch(() => {
+        reject("No results returned");
+      });
+  });
+}
+
+// => Finds a post using its ID
+function getPostById(id) {
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: {
+        id: id,
+      },
+    })
+      .then((data) => {
+        resolve(data[0]);
+      })
+      .catch(() => {
+        reject("No results returned");
+      });
+  });
+}
+
+// => Find posts by category
+function getPostsByCategory(category) {
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: {
+        category: category,
+      },
+    })
+      .then((data) => {
+        console.log(category);
+        resolve(data);
+      })
+      .catch(() => {
+        reject("No results returned");
+      });
+  });
+}
+
+// => Find posts that have a date greater than the specified minimum date
+function getPostsByMinDate(minDate) {
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: {
+        postDate: {
+          [gte]: new Date(minDateStr),
+        },
+      },
+    })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch(() => {
+        reject("No results returned");
+      });
+  });
+}
+
+// => Adds a new post
+function addPost(postData) {
+  return new Promise((resolve, reject) => {
+    // Ensure published property is set correctly
+    postData.published = postData.published ? true : false;
+
+    // Making sure that the empty values are null
+    for (const i in postData) {
+      if (postData[i] === "") {
+        postData[i] = null;
       }
     }
 
-    Category.create(categoryData)
+    // Setting the date
+    postData.postDate = new Date();
+
+    // Create a new Post using the postData
+    Post.create(postData)
       .then(() => {
         resolve();
       })
       .catch((err) => {
-        reject("Unable to create category");
+        reject("Unable to create post");
       });
   });
 }
+
+// => Adds a new category
+function addCategory(categoryData) {
+  return new Promise((resolve, reject) => {
+    for (let i in categoryData) {
+      if (categoryData[i] === "") {
+        categoryData[i] = null;
+      }
+    }
+
+    Category.create(categoryData)
+      .then((category) => {
+        resolve(category);
+      })
+      .catch(() => {
+        reject("unable to create category");
+      });
+  });
+}
+
+// => Deletes a category by id
 function deleteCategoryById(id) {
   return new Promise((resolve, reject) => {
     Category.destroy({
-      where: { id: id }
+      where: {
+        id: id,
+      },
     })
-      .then((rowsDeleted) => {
-        if (rowsDeleted > 0) {
-          resolve();
-        } else {
-          reject("Category not found");
-        }
+      .then(() => {
+        resolve("Destroyed");
       })
-      .catch((err) => {
+      .catch(() => {
         reject("Unable to delete category");
       });
   });
 }
 
-// Delete a post by ID
+// => Deletes a post by id
 function deletePostById(id) {
   return new Promise((resolve, reject) => {
     Post.destroy({
-      where: { id: id }
+      where: {
+        id: id,
+      },
     })
-      .then((rowsDeleted) => {
-        if (rowsDeleted > 0) {
-          resolve();
-        } else {
-          reject("Post not found");
-        }
+      .then(() => {
+        resolve("Destroyed");
       })
-      .catch((err) => {
-        reject(err.message || "Unable to delete post");
+      .catch(() => {
+        reject("Unable to delete post");
       });
   });
 }
 
-
-module.exports = { 
-  initialize, 
-  getAllPosts, 
-  getPostsByCategory, 
-  getPostsByMinDate, 
-  getPostById, 
-  addPost, 
-  getPublishedPosts, 
-  getPublishedPostsByCategory, 
+module.exports = {
+  initialize,
+  getAllPosts,
+  getPublishedPosts,
   getCategories,
+  addPost,
+  getPostById,
+  getPostsByCategory,
+  getPostsByMinDate,
+  getPublishedPostsByCategory,
+  addCategory,
   deleteCategoryById,
   deletePostById,
-  addCategory
 };
