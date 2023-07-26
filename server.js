@@ -74,9 +74,9 @@ app.engine(
 app.set("view engine", ".hbs");
 
 cloudinary.config({
-  cloud_name: "dtjzbh27c",
-  api_key: "352185835558593",
-  api_secret: "XWtpK6nUkH_eDPJIwyaGDNvo1F0",
+  cloud_name: "dim1rhbtf",
+  api_key: "164953244556485",
+  api_secret: "d6v_khnEy5PpmM_6va6eZwfyYn8",
   secure: true,
 });
 
