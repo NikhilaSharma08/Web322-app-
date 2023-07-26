@@ -1,25 +1,32 @@
-{{#unless categories}} 
+<div class="col-md-12">
+  <h2>Categories</h2>
+  <a href="/categories/add" class="btn btn-success pull-right">Add Category</a>
+  <hr />
+  {{#unless categories}}
     <div class="col-md-12 text-center">
-    <strong>{{message}}</strong>
-  </div>
-{{/unless}}
-<h2>Categories</h2>
-<hr />
-<div class="table-responsive">
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">Category ID</th>
-        <th scope="col">Category Name</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each categories}}
+      <strong>{{message}}</strong>
+    </div>
+  {{/unless}}
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
         <tr>
-          <td><a href="/posts?category={{id}}">{{id}}</a></td>
-          <td><a href="/posts?category={{id}}">{{category}}</a></td>
+          <th>Category ID</th>
+          <th>Category Name</th>
+          <th></th>
         </tr>
-      {{/each}}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {{#each categories}}
+          <tr>
+            <td><a href="/posts?category={{this.id}}">{{this.id}}</a></td>
+            <td><a href="/posts?category={{this.id}}">{{this.name}}</a></td>
+            <td>
+              <a class="btn btn-danger" href="/categories/delete/{{this.id}}">Remove</a>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
 </div>

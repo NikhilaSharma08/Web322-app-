@@ -15,19 +15,16 @@
 
 *
 
-* Cyclic Web App URL: 
-https://rich-cyan-rattlesnake-fez.cyclic.app/about
+* Cyclic Web App URL: https://awful-duck-raincoat.cyclic.app/posts/add
 
 
 *
 
-* GitHub Repository URL: ____________https://github.com/NikhilaSharma08/Web322-app-_________________________________________
+* GitHub Repository URL: ____________https://github.com/NikhilaSharma08/web322-app-2-_________________________________________
 
 *
 
 ********************************************************************************/
-
-const {  initialize,  getAllPosts,  getCategories,  addPost,  getPostById,  getPostsByCategory, getPostsByMinDate,} = require("./blog-service.js");
 const express = require("express");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
@@ -36,9 +33,10 @@ const exphbs = require("express-handlebars");
 const path = require("path");
 const stripJs = require("strip-js");
 const blogData = require("./blog-service.js");
+const { Post, Category } = require("./models"); // Import the Sequelize models
 
 const app = express();
-
+module.exports = { Post, Category };
 app.use(express.static("public"));
 
 app.use(function (req, res, next) {
@@ -80,21 +78,165 @@ app.engine(
       safeHTML: function (context) {
         return stripJs(context);
       },
+      formatDate: function (dateObj) {
+        let year = dateObj.getFullYear();
+        let month = (dateObj.getMonth() + 1).toString();
+        let day = dateObj.getDate().toString();
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      },
     },
   })
 );
 app.set("view engine", ".hbs");
 
 cloudinary.config({
-  cloud_name: "dim1rhbtf",
-  api_key: "164953244556485",
-  api_secret: "d6v_khnEy5PpmM_6va6eZwfyYn8",
+  cloud_name: "dtjzbh27c",
+  api_key: "352185835558593",
+  api_secret: "XWtpK6nUkH_eDPJIwyaGDNvo1F0",
   secure: true,
 });
 
 const upload = multer();
 
 const HTTP_PORT = process.env.PORT || 8080;
+
+
+// Get all posts
+function getAllPosts() {
+  return new Promise((resolve, reject) => {
+    Post.findAll()
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject("No results returned");
+      });
+  });
+}
+
+// Get posts by category
+function getPostsByCategory(category) {
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: { category: category }
+    })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject("No results returned");
+      });
+  });
+}
+
+// Get posts by minimum date
+function getPostsByMinDate(minDate) {
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: { postDate: { [Sequelize.Op.gte]: new Date(minDate) } }
+    })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject("No results returned");
+      });
+  });
+}
+
+// Get post by ID
+function getPostById(id) {
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: { id: id }
+    })
+      .then((data) => {
+        if (data.length > 0) {
+          resolve(data[0]);
+        } else {
+          reject("No results returned");
+        }
+      })
+      .catch((err) => {
+        reject("No results returned");
+      });
+  });
+}
+
+// Add a new post
+function addPost(postData) {
+  return new Promise((resolve, reject) => {
+    postData.published = (postData.published) ? true : false;
+
+    for (const prop in postData) {
+      if (postData[prop] === "") {
+        postData[prop] = null;
+      }
+    }
+
+    postData.postDate = new Date();
+
+    Post.create(postData)
+      .then(() => {
+        resolve();
+      })
+      .catch((err) => {
+        reject("Unable to create post");
+      });
+  });
+}
+
+// Get published posts
+function getPublishedPosts() {
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: { published: true }
+    })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject("No results returned");
+      });
+  });
+}
+
+// Get published posts by category
+function getPublishedPostsByCategory(category) {
+  return new Promise((resolve, reject) => {
+    Post.findAll({
+      where: { published: true, category: category }
+    })
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject("No results returned");
+      });
+  });
+}
+
+// Get all categories
+function getCategories() {
+  return new Promise((resolve, reject) => {
+    Category.findAll()
+      .then((data) => {
+        resolve(data);
+      })
+      .catch((err) => {
+        reject("No results returned");
+      });
+  });
+}
+
+app.get("/posts/add", async (req, res) => {
+  try {
+    const categories = await getCategories();
+    res.render("addPost", { categories: categories });
+  } catch (err) {
+    res.render("addPost", { categories: [] });
+  }
+});
 
 app.get("/", (req, res) => {
   res.redirect("/blog");
@@ -129,11 +271,28 @@ app.get("/blog", async (req, res) => {
   res.render("blog", { data: viewData });
 });
 
+app.get("/posts/delete/:id", (req, res) => {
+  let postId = req.params.id;
+
+  blogData
+    .deletePostById(postId)
+    .then(() => {
+      res.redirect("/posts");
+    })
+    .catch((err) => {
+      res.status(500).send("Unable to Remove Post / Post not found");
+    });
+});
+
 app.get("/posts", (req, res) => {
   if (req.query.category) {
     getPostsByCategory(req.query.category)
       .then((data) => {
-        res.render("posts", { posts: data });
+        if (data.length > 0) {
+          res.render("posts", { posts: data });
+        } else {
+          res.render("posts", { message: "no results" });
+        }
       })
       .catch((err) => {
         res.render("posts", { message: "no results" });
@@ -141,7 +300,11 @@ app.get("/posts", (req, res) => {
   } else if (req.query.minDate) {
     getPostsByMinDate(req.query.minDate)
       .then((data) => {
-        res.render("posts", { posts: data });
+        if (data.length > 0) {
+          res.render("posts", { posts: data });
+        } else {
+          res.render("posts", { message: "no results" });
+        }
       })
       .catch((err) => {
         res.render("posts", { message: "no results" });
@@ -149,7 +312,11 @@ app.get("/posts", (req, res) => {
   } else {
     getAllPosts()
       .then((data) => {
-        res.render("posts", { posts: data });
+        if (data.length > 0) {
+          res.render("posts", { posts: data });
+        } else {
+          res.render("posts", { message: "no results" });
+        }
       })
       .catch((err) => {
         res.render("posts", { message: "no results" });
@@ -175,6 +342,45 @@ app.post("/posts/add", upload.single("featureImage"), (req, res) => {
       streamifier.createReadStream(req.file.buffer).pipe(stream);
     });
   };
+
+  app.get("/categories/add", (req, res) => {
+    res.render("addCategory");
+    
+  app.post("/categories/add", (req, res) => {
+    let categoryData = {
+      category: req.body.category
+    };
+  
+    for (const prop in categoryData) {
+      if (categoryData[prop] === "") {
+        categoryData[prop] = null;
+      }
+    }
+  
+    blogData
+      .addCategory(categoryData)
+      .then(() => {
+        res.redirect("/categories");
+      })
+      .catch((err) => {
+        res.status(500).send("Unable to Add Category");
+      });
+  });
+
+  });
+  app.get("/categories/delete/:id", (req, res) => {
+    let categoryId = req.params.id;
+  
+    blogData
+      .deleteCategoryById(categoryId)
+      .then(() => {
+        res.redirect("/categories");
+      })
+      .catch((err) => {
+        res.status(500).send("Unable to Remove Category / Category not found");
+      });
+  });
+        
 
   async function upload(req) {
     let result = await streamUpload(req);
@@ -216,7 +422,11 @@ app.get("/post/:value", (req, res) => {
 app.get("/categories", (req, res) => {
   getCategories()
     .then((data) => {
-      res.render("categories", { categories: data });
+      if (data.length > 0) {
+        res.render("categories", { categories: data });
+      } else {
+        res.render("categories", { message: "no results" });
+      }
     })
     .catch((err) => {
       res.render("categories", { message: "no results" });
@@ -255,9 +465,13 @@ app.use((req, res) => {
   res.status(404).render("404");
 });
 
-initialize().then(() => {
-  app.listen(HTTP_PORT, () => {
-    console.log("Express http server listening on: " + HTTP_PORT);
+// Initialize Sequelize and start the server
+initialize()
+  .then(() => {
+    app.listen(HTTP_PORT, () => {
+      console.log(`Server listening on port ${HTTP_PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error(err);
   });
-});
-
