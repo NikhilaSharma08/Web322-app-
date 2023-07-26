@@ -138,6 +138,5 @@ module.exports = {
   getPostsByMinDate,
   getPublishedPostsByCategory,
   addCategory,
-  deleteCategoryById,
   deletePostById,
 };
