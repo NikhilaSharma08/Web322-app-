@@ -1,30 +1,3 @@
-
-/*********************************************************************************
-
-* WEB322 – Assignment 04
-
-* I declare that this assignment is my own work in accordance with Seneca Academic Policy. 
-
-* No part of this assignment has been copied manually or electronically from any other source
-
-* (including web sites) or distributed to other students.
-
-*
-
-* Name: __________Nikhila Sharma____________ Student ID: _____168025211_________ Date:7/7/23 ________________
-
-*
-
-* Cyclic Web App URL: https://awful-duck-raincoat.cyclic.app/posts/add
-
-
-*
-
-* GitHub Repository URL: ____________https://github.com/NikhilaSharma08/web322-app-2-_________________________________________
-
-*
-
-********************************************************************************/
 const express = require("express");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
@@ -33,12 +6,22 @@ const exphbs = require("express-handlebars");
 const path = require("path");
 const stripJs = require("strip-js");
 const blogData = require("./blog-service.js");
-const { Post, Category } = require("./models"); // Import the Sequelize models
+const {
+  initialize,
+  getAllPosts,
+  getCategories,
+  addPost,
+  getPostById,
+  getPublishedPostsByCategory,
+  getPostsByMinDate,
+  addCategory,
+  deleteCategoryById,
+  deletePostById,
+} = require("./blog-service.js");
 
 const app = express();
-module.exports = { Post, Category };
-app.use(express.static("public"));
 
+app.use(express.static("public"));
 app.use(function (req, res, next) {
   let route = req.path.substring(1);
   app.locals.activeRoute =
@@ -49,6 +32,7 @@ app.use(function (req, res, next) {
   app.locals.viewingCategory = req.query.category;
   next();
 });
+app.use(express.urlencoded({ extended: true }));
 
 app.engine(
   ".hbs",
@@ -100,144 +84,6 @@ const upload = multer();
 
 const HTTP_PORT = process.env.PORT || 8080;
 
-
-// Get all posts
-function getAllPosts() {
-  return new Promise((resolve, reject) => {
-    Post.findAll()
-      .then((data) => {
-        resolve(data);
-      })
-      .catch((err) => {
-        reject("No results returned");
-      });
-  });
-}
-
-// Get posts by category
-function getPostsByCategory(category) {
-  return new Promise((resolve, reject) => {
-    Post.findAll({
-      where: { category: category }
-    })
-      .then((data) => {
-        resolve(data);
-      })
-      .catch((err) => {
-        reject("No results returned");
-      });
-  });
-}
-
-// Get posts by minimum date
-function getPostsByMinDate(minDate) {
-  return new Promise((resolve, reject) => {
-    Post.findAll({
-      where: { postDate: { [Sequelize.Op.gte]: new Date(minDate) } }
-    })
-      .then((data) => {
-        resolve(data);
-      })
-      .catch((err) => {
-        reject("No results returned");
-      });
-  });
-}
-
-// Get post by ID
-function getPostById(id) {
-  return new Promise((resolve, reject) => {
-    Post.findAll({
-      where: { id: id }
-    })
-      .then((data) => {
-        if (data.length > 0) {
-          resolve(data[0]);
-        } else {
-          reject("No results returned");
-        }
-      })
-      .catch((err) => {
-        reject("No results returned");
-      });
-  });
-}
-
-// Add a new post
-function addPost(postData) {
-  return new Promise((resolve, reject) => {
-    postData.published = (postData.published) ? true : false;
-
-    for (const prop in postData) {
-      if (postData[prop] === "") {
-        postData[prop] = null;
-      }
-    }
-
-    postData.postDate = new Date();
-
-    Post.create(postData)
-      .then(() => {
-        resolve();
-      })
-      .catch((err) => {
-        reject("Unable to create post");
-      });
-  });
-}
-
-// Get published posts
-function getPublishedPosts() {
-  return new Promise((resolve, reject) => {
-    Post.findAll({
-      where: { published: true }
-    })
-      .then((data) => {
-        resolve(data);
-      })
-      .catch((err) => {
-        reject("No results returned");
-      });
-  });
-}
-
-// Get published posts by category
-function getPublishedPostsByCategory(category) {
-  return new Promise((resolve, reject) => {
-    Post.findAll({
-      where: { published: true, category: category }
-    })
-      .then((data) => {
-        resolve(data);
-      })
-      .catch((err) => {
-        reject("No results returned");
-      });
-  });
-}
-
-// Get all categories
-function getCategories() {
-  return new Promise((resolve, reject) => {
-    Category.findAll()
-      .then((data) => {
-        resolve(data);
-      })
-      .catch((err) => {
-        reject("No results returned");
-      });
-  });
-}
-
-app.get("/posts/add", async (req, res) => {
-  try {
-    const categories = await getCategories();
-    res.render("addPost", { categories: categories });
-  } catch (err) {
-    res.render("addPost", { categories: [] });
-  }
-});
-
 app.get("/", (req, res) => {
   res.redirect("/blog");
 });
@@ -268,31 +114,25 @@ app.get("/blog", async (req, res) => {
   } catch (err) {
     viewData.categoriesMessage = "no results";
   }
-  res.render("blog", { data: viewData });
-});
 
-app.get("/posts/delete/:id", (req, res) => {
-  let postId = req.params.id;
-
-  blogData
-    .deletePostById(postId)
-    .then(() => {
-      res.redirect("/posts");
-    })
-    .catch((err) => {
-      res.status(500).send("Unable to Remove Post / Post not found");
+  if (viewData.posts.length > 0) {
+    res.render("blog", { data: viewData });
+  } else {
+    res.render("blog", {
+      data: viewData,
+      message: "Please try another post / category",
     });
+  }
 });
 
 app.get("/posts", (req, res) => {
+  console.log(req.query.category);
   if (req.query.category) {
-    getPostsByCategory(req.query.category)
+    getPublishedPostsByCategory(req.query.category)
       .then((data) => {
-        if (data.length > 0) {
-          res.render("posts", { posts: data });
-        } else {
-          res.render("posts", { message: "no results" });
-        }
+        data.length > 0
+          ? res.render("posts", { posts: data })
+          : res.render("posts", { message: "No Results" });
       })
       .catch((err) => {
         res.render("posts", { message: "no results" });
@@ -300,11 +140,9 @@ app.get("/posts", (req, res) => {
   } else if (req.query.minDate) {
     getPostsByMinDate(req.query.minDate)
       .then((data) => {
-        if (data.length > 0) {
-          res.render("posts", { posts: data });
-        } else {
-          res.render("posts", { message: "no results" });
-        }
+        data.length > 0
+          ? res.render("posts", { posts: data })
+          : res.render("posts", { message: "No Results" });
       })
       .catch((err) => {
         res.render("posts", { message: "no results" });
@@ -312,11 +150,9 @@ app.get("/posts", (req, res) => {
   } else {
     getAllPosts()
       .then((data) => {
-        if (data.length > 0) {
-          res.render("posts", { posts: data });
-        } else {
-          res.render("posts", { message: "no results" });
-        }
+        data.length > 0
+          ? res.render("posts", { posts: data })
+          : res.render("posts", { message: "No Results" });
       })
       .catch((err) => {
         res.render("posts", { message: "no results" });
@@ -325,7 +161,13 @@ app.get("/posts", (req, res) => {
 });
 
 app.get("/posts/add", (req, res) => {
-  res.render("addPost");
+  getCategories()
+    .then((categories) => {
+      res.render("addPost", { categories: categories });
+    })
+    .catch(() => {
+      res.render("addPost", { categories: [] });
+    });
 });
 
 app.post("/posts/add", upload.single("featureImage"), (req, res) => {
@@ -342,45 +184,6 @@ app.post("/posts/add", upload.single("featureImage"), (req, res) => {
       streamifier.createReadStream(req.file.buffer).pipe(stream);
     });
   };
-
-  app.get("/categories/add", (req, res) => {
-    res.render("addCategory");
-    
-  app.post("/categories/add", (req, res) => {
-    let categoryData = {
-      category: req.body.category
-    };
-  
-    for (const prop in categoryData) {
-      if (categoryData[prop] === "") {
-        categoryData[prop] = null;
-      }
-    }
-  
-    blogData
-      .addCategory(categoryData)
-      .then(() => {
-        res.redirect("/categories");
-      })
-      .catch((err) => {
-        res.status(500).send("Unable to Add Category");
-      });
-  });
-
-  });
-  app.get("/categories/delete/:id", (req, res) => {
-    let categoryId = req.params.id;
-  
-    blogData
-      .deleteCategoryById(categoryId)
-      .then(() => {
-        res.redirect("/categories");
-      })
-      .catch((err) => {
-        res.status(500).send("Unable to Remove Category / Category not found");
-      });
-  });
-        
 
   async function upload(req) {
     let result = await streamUpload(req);
@@ -400,9 +203,10 @@ app.post("/posts/add", upload.single("featureImage"), (req, res) => {
       postObject.published = req.body.published;
 
       if (postObject.title) {
-        addPost(postObject);
+        addPost(postObject).then(() => {
+          res.redirect("/posts");
+        });
       }
-      res.redirect("/posts");
     })
     .catch((err) => {
       res.send(err);
@@ -422,18 +226,55 @@ app.get("/post/:value", (req, res) => {
 app.get("/categories", (req, res) => {
   getCategories()
     .then((data) => {
-      if (data.length > 0) {
-        res.render("categories", { categories: data });
-      } else {
-        res.render("categories", { message: "no results" });
-      }
+      data.length > 0
+        ? res.render("categories", { categories: data })
+        : res.render("categories", { message: "No Results" });
     })
-    .catch((err) => {
+    .catch(() => {
       res.render("categories", { message: "no results" });
     });
 });
 
-app.get('/blog/:id', async (req, res) => {
+app.get("/categories/add", (req, res) => {
+  res.render("addCategory");
+});
+
+app.post("/categories/add", (req, res) => {
+  let catObject = {};
+  catObject.category = req.body.category;
+  console.log(req.body.category);
+  if (req.body.category != "") {
+    addCategory(catObject)
+      .then(() => {
+        res.redirect("/categories");
+      })
+      .catch(() => {
+        console.log("Some error occurred");
+      });
+  }
+});
+
+app.get("/categories/delete/:id", (req, res) => {
+  deleteCategoryById(req.params.id)
+    .then(() => {
+      res.redirect("/categories");
+    })
+    .catch(() => {
+      console.log("Unable to remove category / Category not found");
+    });
+});
+
+app.get("/posts/delete/:id", (req, res) => {
+  deletePostById(req.params.id)
+    .then(() => {
+      res.redirect("/posts");
+    })
+    .catch(() => {
+      console.log("Unable to remove category / Category not found");
+    });
+});
+
+app.get("/blog/:id", async (req, res) => {
   let viewData = {};
   try {
     let posts = [];
@@ -465,13 +306,8 @@ app.use((req, res) => {
   res.status(404).render("404");
 });
 
-// Initialize Sequelize and start the server
-initialize()
-  .then(() => {
-    app.listen(HTTP_PORT, () => {
-      console.log(`Server listening on port ${HTTP_PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error(err);
+initialize().then(() => {
+  app.listen(HTTP_PORT, () => {
+    console.log("Express http server listening on: " + HTTP_PORT);
   });
+});
