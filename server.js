@@ -241,21 +241,20 @@ app.get("/categories", (req, res) => {
 app.get("/categories/add", (req, res) => {
   res.render("addCategory");
 });
-
 app.post("/categories/add", (req, res) => {
-  let catObject = {};
-  catObject.category = req.body.category;
-  console.log(req.body.category);
-  if (req.body.category != "") {
-    addCategory(catObject)
-      .then(() => {
-        res.redirect("/categories");
-      })
-      .catch(() => {
-        console.log("Some error occurred");
-      });
-  }
+  const categoryData = {
+    category: req.body.category,
+  };
+
+  addCategory(categoryData)
+    .then(() => {
+      res.redirect("/categories");
+    })
+    .catch(() => {
+      res.status(500).send("Unable to Add Category");
+    });
 });
+
 
 app.get("/categories/delete/:id", (req, res) => {
   deleteCategoryById(req.params.id)
@@ -263,9 +262,10 @@ app.get("/categories/delete/:id", (req, res) => {
       res.redirect("/categories");
     })
     .catch(() => {
-      console.log("Unable to remove category / Category not found");
+      res.status(500).send("Unable to Remove Category / Category not found");
     });
 });
+
 
 app.get("/posts/delete/:id", (req, res) => {
   deletePostById(req.params.id)
@@ -273,7 +273,7 @@ app.get("/posts/delete/:id", (req, res) => {
       res.redirect("/posts");
     })
     .catch(() => {
-      console.log("Unable to remove category / Category not found");
+      res.status(500).send("Unable to Remove Post / Post not found");
     });
 });
 
