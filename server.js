@@ -137,7 +137,8 @@ app.get("/posts", (req, res) => {
     .catch((err) => {
       res.render("posts", { message: "Error fetching posts" });
     });
-  
+});
+
 app.get("/posts/add", (req, res) => {
   getCategories()
     .then((categories) => {
@@ -148,7 +149,7 @@ app.get("/posts/add", (req, res) => {
     });
 });
 
-
+// Move the closing bracket to this position
 app.post("/posts/add", upload.single("featureImage"), (req, res) => {
   let streamUpload = (req) => {
     return new Promise((resolve, reject) => {
