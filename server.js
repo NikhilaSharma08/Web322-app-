@@ -137,30 +137,7 @@ app.get("/posts", (req, res) => {
     .catch((err) => {
       res.render("posts", { message: "Error fetching posts" });
     });
-});
-  } else if (req.query.minDate) {
-    getPostsByMinDate(req.query.minDate)
-      .then((data) => {
-        data.length > 0
-          ? res.render("posts", { posts: data })
-          : res.render("posts", { message: "No Results" });
-      })
-      .catch((err) => {
-        res.render("posts", { message: "no results" });
-      });
-  } else {
-    getAllPosts()
-      .then((data) => {
-        data.length > 0
-          ? res.render("posts", { posts: data })
-          : res.render("posts", { message: "No Results" });
-      })
-      .catch((err) => {
-        res.render("posts", { message: "no results" });
-      });
-  }
-});
-
+  
 app.get("/posts/add", (req, res) => {
   getCategories()
     .then((categories) => {
