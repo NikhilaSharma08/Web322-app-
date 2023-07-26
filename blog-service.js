@@ -122,11 +122,13 @@ const addCategory = (categoryData) => {
     .then((category) => Promise.resolve(category))
     .catch((err) => Promise.reject("Unable to create category"));
 };
+
 function deletePostById(id) {
   return Post.destroy({
     where: { id: id }
   });
 }
+
 module.exports = {
   initialize,
   getAllPosts,
@@ -138,5 +140,6 @@ module.exports = {
   getPostsByMinDate,
   getPublishedPostsByCategory,
   addCategory,
+  deleteCategoryById, 
   deletePostById,
 };
