@@ -84,13 +84,14 @@ app.engine(
 );
 app.set("view engine", ".hbs");
 
-// Configuring Cloudinary
+
 cloudinary.config({
   cloud_name: "dtjzbh27c",
   api_key: "352185835558593",
   api_secret: "XWtpK6nUkH_eDPJIwyaGDNvo1F0",
   secure: true,
 });
+
 
 // Variable without any disk storage
 const upload = multer();
