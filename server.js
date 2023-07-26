@@ -126,17 +126,18 @@ app.get("/blog", async (req, res) => {
 });
 
 app.get("/posts", (req, res) => {
-  console.log(req.query.category);
-  if (req.query.category) {
-    getPublishedPostsByCategory(req.query.category)
-      .then((data) => {
-        data.length > 0
-          ? res.render("posts", { posts: data })
-          : res.render("posts", { message: "No Results" });
-      })
-      .catch((err) => {
-        res.render("posts", { message: "no results" });
-      });
+  getAllPosts()
+    .then((data) => {
+      if (data.length > 0) {
+        res.render("posts", { posts: data });
+      } else {
+        res.render("posts", { message: "No Results" });
+      }
+    })
+    .catch((err) => {
+      res.render("posts", { message: "Error fetching posts" });
+    });
+});
   } else if (req.query.minDate) {
     getPostsByMinDate(req.query.minDate)
       .then((data) => {
@@ -226,12 +227,14 @@ app.get("/post/:value", (req, res) => {
 app.get("/categories", (req, res) => {
   getCategories()
     .then((data) => {
-      data.length > 0
-        ? res.render("categories", { categories: data })
-        : res.render("categories", { message: "No Results" });
+      if (data.length > 0) {
+        res.render("categories", { categories: data });
+      } else {
+        res.render("categories", { message: "No Results" });
+      }
     })
-    .catch(() => {
-      res.render("categories", { message: "no results" });
+    .catch((err) => {
+      res.render("categories", { message: "Error fetching categories" });
     });
 });
 
