@@ -111,6 +111,43 @@ function getPublishedPostsByCategory(categoryId) {
 function getCategories() {
   return Category.findAll();
 }
+const addCategory = (categoryData) => {
+  for (const prop in categoryData) {
+    if (categoryData[prop] === "") {
+      categoryData[prop] = null;
+    }
+  }
+
+  return Category.create(categoryData)
+    .then((category) => Promise.resolve(category))
+    .catch((err) => Promise.reject("Unable to create category"));
+};
+const addCategory = (categoryData) => {
+  for (const prop in categoryData) {
+    if (categoryData[prop] === "") {
+      categoryData[prop] = null;
+    }
+  }
+
+  return Category.create(categoryData)
+    .then((category) => Promise.resolve(category))
+    .catch((err) => Promise.reject("Unable to create category"));
+};
+const deletePostById = (id) => {
+  return Post.destroy({
+    where: {
+      id: id
+    }
+  })
+    .then((rowsDeleted) => {
+      if (rowsDeleted > 0) {
+        return Promise.resolve();
+      } else {
+        return Promise.reject("Post not found");
+      }
+    })
+    .catch((err) => Promise.reject("Unable to remove post"));
+};
 
 module.exports = {
   initialize,
