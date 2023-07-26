@@ -143,10 +143,11 @@ app.get("/posts/add", (req, res) => {
     .then((categories) => {
       res.render("addPost", { categories: categories });
     })
-    .catch(() => {
+    .catch((err) => {
       res.render("addPost", { categories: [] });
     });
 });
+
 
 app.post("/posts/add", upload.single("featureImage"), (req, res) => {
   let streamUpload = (req) => {
