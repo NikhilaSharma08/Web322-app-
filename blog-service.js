@@ -1,7 +1,11 @@
 const Sequelize = require('sequelize');
 const { gte } = Sequelize.Op;
 
-var sequelize = new Sequelize('azaylcii', 'azaylcii', 'aJUA-uZuFiGQR96Ph47BrPq9u9laL_iI', {
+var sequelize = new Sequelize(
+  
+  "azaylcii",
+"azaylcii",
+ "aJUA-uZuFiGQR96Ph47BrPq9u9laL_iI", {
   host: 'stampy.db.elephantsql.com',
   dialect: 'postgres',
   port: 5432,
