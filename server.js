@@ -1,3 +1,32 @@
+*********************************************************************************
+
+* WEB322 – Assignment 05
+
+* I declare that this assignment is my own work in accordance with Seneca Academic Policy. No part
+
+* of this assignment has been copied manually or electronically from any other source
+
+* (including 3rd party web sites) or distributed to other students.
+
+*
+
+* Name: _________Nikhila_____________ Student ID: __168025211____________ Date: ________7/26/2023________
+
+*
+
+* Cyclic Web App URL: https://itchy-pear-dungarees.cyclic.app/about
+
+*
+
+* GitHub Repository URL: https://github.com/NikhilaSharma08/Web322-app-
+
+*
+
+********************************************************************************/
+
+
+
+
 const HTTP_PORT = process.env.PORT || 8080;
 const express = require("express");
 const multer = require('multer');
