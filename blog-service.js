@@ -4,7 +4,7 @@ let exp = module.exports
 let sequelize = new Sequelize(
     "azaylcii",
     "azaylcii",
-    "aJUA-uZuFiGQR96Ph47BrPq9u9laL_il",
+    "aJUA-uZuFiGQR96Ph47BrPq9u9laL_iI",
     {
         host: "stampy.db.elephantsql.com",
         dialect: "postgres",
