@@ -21,9 +21,12 @@ app.use(function (req, res, next) {
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json())
-// this serves static files..
-app.use(express.static(__dirname + '/public'))
 
+app.set("views", path.join(__dirname, "views"));
+
+
+app.engine(".hbs", exphbs.engine);
+app.set("view engine", ".hbs");
 
 // seting up the handlebars
 //custom handlebars helper
@@ -56,11 +59,6 @@ app.engine('.hbs', exphbs.engine({
         }
     }
 }));
-
-app.set('view engine', '.hbs');
-
-
-
 
 
 
