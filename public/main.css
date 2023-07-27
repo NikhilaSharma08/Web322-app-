@@ -1,53 +1,47 @@
 body {
-    background-color: #f5f5f5;
-    font-family: Arial, sans-serif;
-  }
-  
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #ffffff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .navbar {
-    background-color: #ff7f50;
-    border-color: #ff7f50;
-  }
-  
-  .navbar-default .navbar-nav > li > a {
-    color: #ffffff;
-  }
-  
-  .navbar-default .navbar-nav > li > a:hover,
-  .navbar-default .navbar-nav > li > a:focus {
-    background-color: #ff6347;
-  }
-  
-  h1,
-  h2 {
-    color: #ff7f50;
-    text-align: center;
-  }
-  
-  p {
-    color: #333333;
-    line-height: 1.5;
-  }
-  
-  aside {
-    background-color: #fffbf2;
-    padding: 20px;
-  }
-  
-  button.navbar-toggle {
-    background-color: #ffffff;
-    border: none;
-  }
-  
-  button.navbar-toggle .icon-bar {
-    background-color: #333333;
-  }
-  
-  
+  font-family: Arial, sans-serif;
+  background-color: #e0e0e0; /* Change to your preferred background color */
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #007bff; /* Change to your preferred header background color */
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff; /* Change to your preferred button background color */
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3; /* Change to your preferred button hover background color */
+}
+
+footer {
+  background-color: #007bff; /* Change to your preferred footer background color */
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
