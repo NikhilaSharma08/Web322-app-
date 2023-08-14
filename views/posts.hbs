@@ -1,15 +1,8 @@
-<link rel="stylesheet" href="/css/main.css" />
 <div class="row">
   <div class="col-md-12">
-    <div class="controller">
-      <h2>Posts</h2>
-      <button class="overriden"><a
-          href="/posts/add"
-          class="btn btn-success pull-right"
-        >Add Post</a></button>
-    </div>
-
+    <h2>Posts</h2>
     <hr />
+
     <div class="table-responsive">
       <table class="table">
         <thead>
@@ -22,27 +15,27 @@
           </tr>
         </thead>
         <tbody>
-
           {{#each posts}}
-            <tr>
-              <td>{{id}}</td>
-              <td>{{title}}</td>
-              <td>{{#formatDate postDate}}</td>
-              {{/formatDate}}
-              <td><a
-                  href="/posts?category={{this.category}}"
-                >{{this.category}}</a></td>
-              <td>{{published}}</td>
-              <td><a class="btn btn-danger" href="posts/delete/{{id}}">remove</a></td>
-            </tr>
+          <tr>
+            <td>{{this.id}}</td>
+            <td>{{this.title}}</td>
+            <td>{{this.date}}</td>
+            <td><a href="/posts?category={{this.category}}">{{this.category}}</a></td>
+            <td>{{this.published}}</td>
+      <td>
+        <a href="/posts/delete/{{id}}" class="btn btn-danger">Remove</a>
+      </td>
+          </tr>
+         
           {{/each}}
         </tbody>
       </table>
     </div>
-    {{#unless posts}}
-      <div class="col-md-12 text-center">
-        <strong>{{message}}</strong>
-      </div>
-    {{/unless}}
+
+    <div class="col-md-12 text-center">
+      {{#unless posts}}
+      <strong>{{message}}</strong>
+      {{/unless}}
+    </div>
   </div>
 </div>

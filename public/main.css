@@ -1,47 +1,129 @@
+/* Global Styles */
+
 body {
   font-family: Arial, sans-serif;
-  background-color: #e0e0e0; /* Change to your preferred background color */
   margin: 0;
   padding: 0;
-}
-
-header {
-  background-color: #007bff; /* Change to your preferred header background color */
-  color: #fff;
-  padding: 20px;
-  text-align: center;
-}
-
-h1 {
-  margin: 0;
-  font-size: 32px;
+  background-color: #f6f6f6;
 }
 
 .container {
-  max-width: 800px;
-  margin: 20px auto;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1,
+h2,
+h3 {
+  color: #333;
+}
+
+a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Header Styles */
+
+.header {
+  background-color: #007bff;
+  padding: 20px;
+  color: #fff;
+}
+
+.header h1 {
+  font-size: 32px;
+  margin: 0;
+}
+
+/* Navigation Styles */
+
+.navbar {
+  background-color: #333;
+  padding: 10px;
+}
+
+.navbar ul {
+  display: flex;
+  justify-content: center;
+}
+
+.navbar li {
+  margin: 0 10px;
+}
+
+.navbar li a {
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.navbar li a:hover {
+  color: #007bff;
+}
+
+/* Main Content Styles */
+
+.main {
   padding: 20px;
   background-color: #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.button {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #007bff; /* Change to your preferred button background color */
-  color: #fff;
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
+.post {
+  margin-bottom: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
 }
 
-.button:hover {
-  background-color: #0056b3; /* Change to your preferred button hover background color */
+.post h2 {
+  font-size: 24px;
+  margin: 0 0 10px 0;
 }
 
-footer {
-  background-color: #007bff; /* Change to your preferred footer background color */
+.post .post-date {
+  color: #999;
+  font-size: 14px;
+}
+
+.post .post-content {
+  margin-top: 10px;
+  color: #333;
+}
+
+/* Sidebar Styles */
+
+.sidebar {
+  padding: 20px;
+  background-color: #fff;
+}
+
+.sidebar h3 {
+  font-size: 18px;
+  margin: 0 0 10px 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 10px;
+}
+
+/* Footer Styles */
+
+.footer {
+  background-color: #333;
   color: #fff;
   padding: 20px;
   text-align: center;
+  font-size: 14px;
+}
+
+.footer p {
+  margin: 0;
 }
