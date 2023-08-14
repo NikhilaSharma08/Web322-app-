@@ -89,27 +89,6 @@ module.exports.checkUser = function (userData) {
             .catch((err) => {
               reject("Incorrect Password for user: " + userData.username);
             });
-
-          //   if (users[0].password == userData.password) {
-          //     users[0].loginHistory.push({
-          //       dateTime: new Date().toString(),
-          //       userAgent: userData.userAgent,
-          //     });
-
-          //     User.update(
-          //       { username: users[0].username },
-          //       { $set: { loginHistory: users[0].loginHistory } }
-          //     )
-          //       .exec()
-          //       .then(() => {
-          //         resolve(users[0]);
-          //       })
-          //       .catch((err) => {
-          //         reject("There was an error verifying the user: " + err);
-          //       });
-          //   } else {
-          //     reject("Incorrect Password for user: " + userData.username);
-          //   }
         }
       })
       .catch((err) => {
